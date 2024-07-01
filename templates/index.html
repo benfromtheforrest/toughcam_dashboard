@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashcam Config</title>
+</head>
+<body>
+    <h1>Dashcam Configuration</h1>
+    <h2>Video Feed</h2>
+    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    <h2>System Information</h2>
+    <div id="system-info"></div>
+    <h2>GPS Information</h2>
+    <div id="gps-info"></div>
+    <h2>Video Quality Settings</h2>
+    <form method="post" action="{{ url_for('set_quality') }}">
+        <select name="quality">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select>
+        <button type="submit">Set Quality</button>
+    </form>
+    <script>
+        function updateSystemInfo() {
+            fetch('/system_info').then(response => response.json()).then(data => {
+                document.getElementById('system-info').innerHTML = `
+                    <p>CPU Temperature: ${data.cpu_temp}°C</p>
+                    <p>Available Memory: ${data.mem_available} MB</p>
+                    <p>Throttled: ${data.throttled}</p>
+                `;
+            });
+        }
+
+        function updateGPSInfo() {
+            fetch('/gps_info').then(response => response.json()).then(data => {
+                document.getElementById('gps-info').innerHTML = `
+                    <p>Latitude: ${data.latitude}</p>
+                    <p>Longitude: ${data.longitude}</p>
+                    <p>Altitude: ${data.altitude} meters</p>
+                    <p>Timestamp: ${data.timestamp}</p>
+                `;
+            });
+        }
+
+        setInterval(updateSystemInfo, 5000);
+        setInterval(updateGPSInfo, 5000);
+    </script>
+</body>
+</html>
